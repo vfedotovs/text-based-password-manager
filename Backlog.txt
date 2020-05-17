@@ -1,0 +1,60 @@
+Backlog 2020-05-17
+=======
+
+1. Start app:
+	- collect 'create' from stdin
+		- collect db file name <- 'str'
+		- collect db file master password <- 'str'
+		- exits app here bug - should return to load db file #FIXME1
+
+	- collect 'load' from stdin
+		- collect db file name <- 'str'
+			- if file contains saved entries load fails - app crashes #FIXME2
+		- collect db file unlock master password <- 'str' -ok
+		- load db file object entries -> to memory -ok only with empty file
+
+	- interacting with app	
+		- print -> passmanager menu action options 
+			- list
+			1. List all entries -ok
+			2. Crete new entry -ok
+			3. Find entry - not implemented
+			4. Read file to memory - totest
+			5. Save entries to file - ok
+			6. Exit/close app -ok
+
+		- collect menu action choice <- 
+			- call menu action item function
+
+### TODO ###
+seems if new masster pass created - filecontent is not encripted = plain text
+
+app workflow
+	- start - crete master pass file
+	- ask would you like to start app and authenticate agest  master password file
+	- create few entries maually
+	- save to pass_db_file
+	- exit
+
+app start 2 with goal to load  saved passwords from file:
+	- ask would you like to start app and authenticate agest  master password file
+	- in memu chose load pass db file to memory
+	- list ,find, edit, create new, save, exit app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
