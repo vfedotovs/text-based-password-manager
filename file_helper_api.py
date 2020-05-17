@@ -19,7 +19,7 @@ def load_master_pass_file() -> str:
     """Fnction reads  master_pass.bin
 
     Returns:
-        pass_hash_str str: saved master password  in plain text for now       
+        pass_hash_str str: saved master password  in plain text for now   
     """
     print("Loading master_pass.bin file ...")
     file_name = "master_pass.bin"
