@@ -1,4 +1,8 @@
 import pickle
+from file_helper_api import find_master_pass_file
+from file_helper_api import load_master_pass_file
+from file_helper_api import create_master_pass_file
+from authenticate_api import pass_auth
 
 
 def start_app() -> str:
@@ -6,10 +10,22 @@ def start_app() -> str:
     Takes user stdin
     Returns: string create or load
     """
-    print("**********************")
-    print("Password Manager v1.0 ")
-    print("**********************\n")
-    print("Please enter 'create' for new database file or 'load' to load exiting database file:")
+    print("*********************************")
+    print("Text based Password Manager v1.0 ")
+    print("*********************************\n")
+
+    print("Searching for master_pass.bin file ...")
+    if find_master_pass_file():
+        return 'load'
+
+    else:
+        print(
+            "Password manager master_pass.bin file was not found.")
+
+        print("Type 'create' to create new MASTER PASSOWORD and save it to new master_pass.bin file")
+
+    # test
+    # print(" database file or 'load' to load exiting database file:")
     start_answer = input()
     possible_choices = ['create', 'load']
 
@@ -18,62 +34,7 @@ def start_app() -> str:
             return start_answer
 
         else:
-            print("Please enter valid choise ...")
-
-
-def load_file() -> str:
-    load_file_name = input(
-        "Please enter database file to load:")
-    try:
-        with open(load_file_name, 'r') as f:
-            # This will read only first line with pass hash
-            first_line = (f.readline())
-            pass_hash_str = first_line[11:]
-            return pass_hash_str
-
-    except IOError:
-        print("Password manager database file not found, do you want to create new file?")
-
-
-def create_file():
-    new_file_name = input(
-        "Please enter data base file name example (my_db.txt)")
-    first_pass = input("Enter master password for file: ")
-    # conf_pass = input("Confirm master password: ") # will be needed for hidden passwords
-
-    with open(new_file_name, 'w') as f:
-        code = 'masterpass:'
-        hash = code + first_pass    # masterpass:1234
-        print(hash)
-        f.write(hash)
-
-
-def pass_auth(passw_hash: str) -> bool:
-
-    def compare_user_input(hash) -> bool:
-        unlock_pass = str(input(": "))
-        master_pass = hash
-
-        if unlock_pass == master_pass:
-            return True
-        else:
-            return False
-
-    unlocked = False
-    print("To unlock database file please enter master password: ")
-    unlock_attempt_count = 3
-    while unlock_attempt_count > 0:
-        # print(unlock_attempt_count)  # only for debug
-        if compare_user_input(passw_hash):
-            unlocked = True
-            break
-        else:
-            if unlock_attempt_count > 1:
-                print(
-                    "Entered password was incorrect please try again ... ")
-
-        unlock_attempt_count -= 1
-    return unlocked
+            print("Please enter valid choise 'create' or 'load'...")
 
 
 def get_menu_choice() -> str:
@@ -82,12 +43,14 @@ def get_menu_choice() -> str:
     """
     chices_list = ['1', '2', '4', '5', '6']
     print("\nPlease choose option :")
-    print("1. List all entries")
-    print("2. Crete new entry")
+    print("If you have saved your passwords before, use option 4 to load it in memory")
+    print(" ")
+    print("1. List all password entries - ok")
+    print("2. Crete new password entry - ok")
     print("3. Find entry - not implemented")
-    print("4. Read file to memory - totest")
+    print("4. Read file to memory - ok")
     print("5. Save entries to file - ok")
-    print("6. Exit application")
+    print("6. Exit application - ok ")
 
     while True:
         choice = str(input(":"))
@@ -167,22 +130,29 @@ def read_objects_to_memory():
 # Main code driver
 all_entry_list = []
 
-start_choice = start_app()
-if start_choice == 'create':
-    create_file()
-if start_choice == 'load':
-    db_file_unlock_hash = load_file()
-    # Try to pass file authentication
-    auth_reponse = pass_auth(db_file_unlock_hash)
-    if auth_reponse:
-        print("Database file was loaded with sucess")
-        while True:
-            menu_choice = get_menu_choice()
-            if menu_choice == '6':
-                print("You have choosen exit application ...")
-                break
-            else:
-                process_menu_choice(menu_choice)
+# load master_pass.bin return  pass string used for auth
 
-    if auth_reponse is False:
-        print("Failed to load Database file due to incorrect master password ")
+while True:
+    start_choice = start_app()
+    if find_master_pass_file():
+        db_file_unlock_hash = load_master_pass_file()
+        # Try to pass file authentication
+        auth_reponse = pass_auth(db_file_unlock_hash)
+        if auth_reponse:
+            # print("Database file was loaded with sucess")
+            while True:
+                menu_choice = get_menu_choice()
+                if menu_choice == '6':
+                    print("You have choosen exit application ...")
+                    break
+                else:
+                    process_menu_choice(menu_choice)
+
+        if auth_reponse is False:
+            print("Failed to unlock app due to incorrect master password ")
+
+    if start_choice == 'create':
+        create_master_pass_file()
+
+    if start_choice == 'load':
+        pass

@@ -1,2 +1,3 @@
 # ignore database  files
 *.bin
+__pycache__
